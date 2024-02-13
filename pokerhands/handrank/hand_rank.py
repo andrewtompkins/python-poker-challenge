@@ -6,6 +6,13 @@ class HandRank(ABC):
         self._hand_strength = hand_strength
 
     def compare_to(self, other):
+
+        if self._hand_strength is None:
+            return 0
+
+        if other.get_hand_strength() is None:
+            return self._hand_strength.value
+            
         strength = self._hand_strength.compare_to(other.get_hand_strength())
         if strength == 0:
             strength = self.compare_same_rank(other)

@@ -33,6 +33,18 @@ class HandTest(unittest.TestCase):
         hand_six = Hand(cards)
         self.assertEqual("An unrankable hand with 6 card(s)", hand_six.describe_hand_rank())
         self.assertEqual(0, hand_two.compare_to(hand_six))
+        self.assertEqual(0, hand_six.compare_to(hand_two))
+
+        cards = [
+            Card(Rank.ACE, Suit.CLUBS),
+            Card(Rank.KING, Suit.CLUBS),
+            Card(Rank.QUEEN, Suit.CLUBS),
+            Card(Rank.JACK, Suit.CLUBS),
+            Card(Rank.TEN, Suit.CLUBS),
+        ]
+        royal_flush = Hand(cards)
+        self.assertEqual(9, royal_flush.compare_to(hand_two))
+        self.assertEqual(0, hand_two.compare_to(royal_flush))
 
     def test_royal_flush(self):
         cards = [
