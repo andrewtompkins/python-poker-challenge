@@ -200,5 +200,335 @@ class HandTest(unittest.TestCase):
         self.assertEqual("Straight, king high", high_straight_hand.describe_hand_rank())
         self.assertTrue(low_straight_hand.compare_to(high_straight_hand) < 0)
 
+    def test_get_best_hand_from_deck(self):
+        cards = Deck().pick(52)
+        originalHand = Hand(cards)
+        bestHand = originalHand.get_best_hand()
+        self.assertEqual(9, bestHand.get_rank().get_hand_strength().value)
+
+
+    def test_get_best_hand_royal_flush(self):
+
+        cards = [
+            # Straight hand
+            Card(Rank.TWO, Suit.HEARTS),
+            Card(Rank.THREE, Suit.DIAMONDS),
+            Card(Rank.FIVE, Suit.CLUBS),
+            Card(Rank.SEVEN, Suit.SPADES),
+            Card(Rank.EIGHT, Suit.HEARTS),
+            Card(Rank.NINE, Suit.DIAMONDS),
+            Card(Rank.TEN, Suit.CLUBS),
+            Card(Rank.JACK, Suit.SPADES),
+            Card(Rank.QUEEN, Suit.HEARTS),
+            Card(Rank.KING, Suit.DIAMONDS),
+            Card(Rank.ACE, Suit.CLUBS),
+            Card(Rank.TWO, Suit.SPADES),
+
+            # Royal Flush
+            Card(Rank.TEN, Suit.HEARTS),
+            Card(Rank.JACK, Suit.HEARTS),
+            Card(Rank.QUEEN, Suit.HEARTS),
+            Card(Rank.KING, Suit.HEARTS),
+            Card(Rank.ACE, Suit.HEARTS)
+        ]
+
+        besthand = Hand(cards).get_best_hand()
+
+        expected_best_hand_cards = [
+            Card(Rank.TEN, Suit.HEARTS),
+            Card(Rank.JACK, Suit.HEARTS),
+            Card(Rank.QUEEN, Suit.HEARTS),
+            Card(Rank.KING, Suit.HEARTS),
+            Card(Rank.ACE, Suit.HEARTS)
+        ]
+
+        self.assertTrue(self.compare_card_arrays(expected_best_hand_cards, besthand.get_cards()))
+        self.assertEqual(Hand(expected_best_hand_cards).describe_hand_rank(), besthand.describe_hand_rank())
+
+    def test_get_best_hand_straight_flush(self):
+
+        cards = [
+            # Straight Flush (higher)
+            Card(Rank.TEN, Suit.CLUBS),
+            Card(Rank.JACK, Suit.CLUBS),
+            Card(Rank.QUEEN, Suit.CLUBS),
+            Card(Rank.KING, Suit.CLUBS),
+            Card(Rank.ACE, Suit.CLUBS),
+            
+            # Straight Flush (lower)
+            Card(Rank.FIVE, Suit.CLUBS),
+            Card(Rank.SIX, Suit.CLUBS),
+            Card(Rank.SEVEN, Suit.CLUBS),
+            Card(Rank.EIGHT, Suit.CLUBS),
+            Card(Rank.NINE, Suit.CLUBS),
+
+            # Four of a Kind
+            Card(Rank.TWO, Suit.HEARTS),
+            Card(Rank.TWO, Suit.DIAMONDS),
+            Card(Rank.TWO, Suit.CLUBS),
+            Card(Rank.TWO, Suit.SPADES),
+            Card(Rank.SEVEN, Suit.SPADES),
+            
+            # Straight hand
+            Card(Rank.TWO, Suit.HEARTS),
+            Card(Rank.THREE, Suit.DIAMONDS),
+            Card(Rank.FIVE, Suit.CLUBS),
+            Card(Rank.SEVEN, Suit.SPADES),
+            Card(Rank.EIGHT, Suit.HEARTS),
+            Card(Rank.NINE, Suit.DIAMONDS),
+            Card(Rank.TEN, Suit.CLUBS),
+            Card(Rank.JACK, Suit.SPADES),
+            Card(Rank.QUEEN, Suit.HEARTS),
+            Card(Rank.KING, Suit.DIAMONDS),
+            Card(Rank.ACE, Suit.CLUBS),
+            Card(Rank.TWO, Suit.SPADES)
+        ]
+
+        besthand = Hand(cards).get_best_hand()
+
+        expected_best_hand_cards = [
+            Card(Rank.TEN, Suit.CLUBS),
+            Card(Rank.JACK, Suit.CLUBS),
+            Card(Rank.QUEEN, Suit.CLUBS),
+            Card(Rank.KING, Suit.CLUBS),
+            Card(Rank.ACE, Suit.CLUBS),
+        ]
+
+        self.assertTrue(self.compare_card_arrays(expected_best_hand_cards, besthand.get_cards()))
+        self.assertEqual(Hand(expected_best_hand_cards).describe_hand_rank(), besthand.describe_hand_rank())
+
+    def test_get_best_hand_four_of_a_kind(self):
+
+        cards = [
+            # Four of a Kind (higher)
+            Card(Rank.TWO, Suit.HEARTS),
+            Card(Rank.TWO, Suit.DIAMONDS),
+            Card(Rank.TWO, Suit.CLUBS),
+            Card(Rank.TWO, Suit.SPADES),
+            Card(Rank.THREE, Suit.SPADES),
+            
+            # Four of a Kind (lower)
+            Card(Rank.TWO, Suit.HEARTS),
+            Card(Rank.TWO, Suit.DIAMONDS),
+            Card(Rank.TWO, Suit.CLUBS),
+            Card(Rank.TWO, Suit.SPADES),
+            Card(Rank.FOUR, Suit.HEARTS),
+        ]
+
+        besthand = Hand(cards).get_best_hand()
+
+        expected_best_hand_cards = [
+            Card(Rank.TWO, Suit.HEARTS),
+            Card(Rank.TWO, Suit.DIAMONDS),
+            Card(Rank.TWO, Suit.CLUBS),
+            Card(Rank.TWO, Suit.SPADES),
+            Card(Rank.FOUR, Suit.HEARTS),
+        ]
+
+        self.assertTrue(self.compare_card_arrays(expected_best_hand_cards, besthand.get_cards()))
+        self.assertEqual(Hand(expected_best_hand_cards).describe_hand_rank(), besthand.describe_hand_rank())
+
+
+    def test_get_best_hand_full_house(self):
+
+        cards = [
+            Card(Rank.THREE, Suit.HEARTS),
+            Card(Rank.THREE, Suit.DIAMONDS),
+            Card(Rank.THREE, Suit.SPADES),
+            Card(Rank.FOUR, Suit.SPADES),
+            Card(Rank.FOUR, Suit.CLUBS),            
+            Card(Rank.TWO, Suit.HEARTS),
+            Card(Rank.TWO, Suit.DIAMONDS),
+            Card(Rank.SIX, Suit.HEARTS),
+            Card(Rank.SIX, Suit.DIAMONDS),
+            Card(Rank.SIX, Suit.SPADES),
+        ]
+
+        expected_best_hand_cards = [
+            Card(Rank.FOUR, Suit.SPADES),
+            Card(Rank.FOUR, Suit.CLUBS),
+            Card(Rank.SIX, Suit.HEARTS),
+            Card(Rank.SIX, Suit.DIAMONDS),
+            Card(Rank.SIX, Suit.SPADES),
+        ]
+
+        besthand = Hand(cards).get_best_hand()
+
+        self.assertTrue(self.compare_card_arrays(expected_best_hand_cards, besthand.get_cards()))
+        self.assertEqual(Hand(expected_best_hand_cards).describe_hand_rank(), besthand.describe_hand_rank())
+
+    def test_get_best_hand_flush(self):
+
+        lower_flush_cards = [
+            Card(Rank.TWO, Suit.HEARTS),
+            Card(Rank.FOUR, Suit.HEARTS),
+            Card(Rank.SIX, Suit.HEARTS),
+            Card(Rank.SEVEN, Suit.HEARTS),
+            Card(Rank.TEN, Suit.HEARTS),
+        ]
+
+        higher_flush_cards = [
+            Card(Rank.TWO, Suit.DIAMONDS),
+            Card(Rank.FOUR, Suit.DIAMONDS),
+            Card(Rank.SIX, Suit.DIAMONDS),
+            Card(Rank.EIGHT, Suit.DIAMONDS),
+            Card(Rank.TEN, Suit.DIAMONDS),
+        ]
+
+        cards = lower_flush_cards + higher_flush_cards
+
+        low_flush_hand = Hand(lower_flush_cards)
+        high_flush_hand = Hand(higher_flush_cards)
+
+        self.assertEqual(-1, low_flush_hand.compare_to(high_flush_hand))
+
+        besthand = Hand(cards).get_best_hand()
+
+        self.assertTrue(self.compare_card_arrays(higher_flush_cards, besthand.get_cards()))
+        self.assertEqual(Hand(higher_flush_cards).describe_hand_rank(), besthand.describe_hand_rank())
+
+
+    def test_get_best_hand_straight(self):
+
+        cards = [
+            Card(Rank.TWO, Suit.HEARTS),
+            Card(Rank.THREE, Suit.DIAMONDS),
+            Card(Rank.FIVE, Suit.CLUBS),
+            Card(Rank.SEVEN, Suit.SPADES),
+            Card(Rank.EIGHT, Suit.HEARTS),
+            Card(Rank.NINE, Suit.DIAMONDS),
+            Card(Rank.TEN, Suit.CLUBS),
+            Card(Rank.JACK, Suit.SPADES),
+            Card(Rank.QUEEN, Suit.HEARTS),
+            Card(Rank.KING, Suit.DIAMONDS),
+            Card(Rank.ACE, Suit.CLUBS),
+            Card(Rank.TWO, Suit.SPADES)
+        ]
+
+        besthand = Hand(cards).get_best_hand()
+
+        expected_best_hand_cards = [
+            Card(Rank.TEN, Suit.CLUBS),
+            Card(Rank.JACK, Suit.SPADES),
+            Card(Rank.QUEEN, Suit.HEARTS),
+            Card(Rank.KING, Suit.DIAMONDS),
+            Card(Rank.ACE, Suit.CLUBS),
+        ]
+
+        self.assertTrue(self.compare_card_arrays(expected_best_hand_cards, besthand.get_cards()))
+        self.assertEqual(Hand(expected_best_hand_cards).describe_hand_rank(), besthand.describe_hand_rank())
+
+    def test_get_best_hand_three_of_a_kind(self):
+
+        cards = [
+            Card(Rank.TWO, Suit.CLUBS),
+            Card(Rank.FOUR, Suit.HEARTS),
+            Card(Rank.SEVEN, Suit.HEARTS),
+            Card(Rank.SEVEN, Suit.DIAMONDS),
+            Card(Rank.SEVEN, Suit.CLUBS),
+            Card(Rank.TEN, Suit.HEARTS),
+            Card(Rank.JACK, Suit.HEARTS),
+            Card(Rank.QUEEN, Suit.SPADES),
+        ]
+
+        besthand = Hand(cards).get_best_hand()
+
+        expected_best_hand_cards = [
+            Card(Rank.SEVEN, Suit.HEARTS),
+            Card(Rank.SEVEN, Suit.DIAMONDS),
+            Card(Rank.SEVEN, Suit.CLUBS),
+            Card(Rank.JACK, Suit.HEARTS),
+            Card(Rank.QUEEN, Suit.SPADES),
+        ]
+
+        self.assertTrue(self.compare_card_arrays(expected_best_hand_cards, besthand.get_cards()))
+        self.assertEqual(Hand(expected_best_hand_cards).describe_hand_rank(), besthand.describe_hand_rank())
+
+    def test_find_best_hand_two_pair(self):
+
+        cards = [
+            Card(Rank.TWO, Suit.HEARTS),
+            Card(Rank.TWO, Suit.DIAMONDS),
+            Card(Rank.THREE, Suit.HEARTS),
+            Card(Rank.SIX, Suit.CLUBS),
+            Card(Rank.THREE, Suit.SPADES),
+            Card(Rank.FOUR, Suit.HEARTS),
+            Card(Rank.SIX, Suit.HEARTS),
+            Card(Rank.SEVEN, Suit.DIAMONDS),
+        ]
+
+        expected_best_hand_cards = [
+            Card(Rank.THREE, Suit.HEARTS),
+            Card(Rank.THREE, Suit.SPADES),
+            Card(Rank.SIX, Suit.CLUBS),
+            Card(Rank.SIX, Suit.HEARTS),
+            Card(Rank.SEVEN, Suit.DIAMONDS),
+        ]
+
+        besthand = Hand(cards).get_best_hand()
+
+        self.assertTrue(self.compare_card_arrays(expected_best_hand_cards, besthand.get_cards()))
+        self.assertEqual(Hand(expected_best_hand_cards).describe_hand_rank(), besthand.describe_hand_rank())
+
+    def test_find_best_hand_one_pair(self):
+
+        cards = [
+            Card(Rank.TWO, Suit.HEARTS),
+            Card(Rank.TWO, Suit.DIAMONDS),
+            Card(Rank.THREE, Suit.HEARTS),
+            Card(Rank.SIX, Suit.CLUBS),
+            Card(Rank.FIVE, Suit.SPADES),
+            Card(Rank.EIGHT, Suit.HEARTS),
+            Card(Rank.SEVEN, Suit.DIAMONDS),
+        ]
+
+        expected_best_hand_cards = [
+            Card(Rank.TWO, Suit.HEARTS),
+            Card(Rank.TWO, Suit.DIAMONDS),
+            Card(Rank.SIX, Suit.CLUBS),
+            Card(Rank.EIGHT, Suit.HEARTS),
+            Card(Rank.SEVEN, Suit.DIAMONDS),
+        ]
+
+        besthand = Hand(cards).get_best_hand()
+
+        self.assertTrue(self.compare_card_arrays(expected_best_hand_cards, besthand.get_cards()))
+        self.assertEqual(Hand(expected_best_hand_cards).describe_hand_rank(), besthand.describe_hand_rank())
+
+    def test_find_best_hand_highcard(self):
+
+        cards = [
+            Card(Rank.TWO, Suit.DIAMONDS),
+            Card(Rank.THREE, Suit.HEARTS),
+            Card(Rank.SIX, Suit.CLUBS),
+            Card(Rank.FIVE, Suit.SPADES),
+            Card(Rank.EIGHT, Suit.HEARTS),
+            Card(Rank.SEVEN, Suit.DIAMONDS),
+        ]
+
+        expected_best_hand_cards = [
+            Card(Rank.THREE, Suit.HEARTS),
+            Card(Rank.SIX, Suit.CLUBS),
+            Card(Rank.FIVE, Suit.SPADES),
+            Card(Rank.EIGHT, Suit.HEARTS),
+            Card(Rank.SEVEN, Suit.DIAMONDS),
+        ]
+
+        besthand = Hand(cards).get_best_hand()
+
+        self.assertTrue(self.compare_card_arrays(expected_best_hand_cards, besthand.get_cards()))
+        self.assertEqual(Hand(expected_best_hand_cards).describe_hand_rank(), besthand.describe_hand_rank())
+
+    def compare_card_arrays(self, cards1, cards2):
+        # Sort the cards in both arrays based on rank and suit
+        sorted_cards1 = sorted(cards1, key=lambda card: (card.rank.value, card.suit.value))
+        sorted_cards2 = sorted(cards2, key=lambda card: (card.rank.value, card.suit.value))
+
+        # Compare the sorted arrays element-wise
+        for card1, card2 in zip(sorted_cards1, sorted_cards2):
+            if card1.rank != card2.rank or card1.suit != card2.suit:
+                return False  # Arrays are not equal
+        return True  # Arrays are equal   
+        
 if __name__ == '__main__':
     unittest.main()
