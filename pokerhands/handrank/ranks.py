@@ -187,10 +187,16 @@ class RoyalFlush(HandRank):
 class NotRankableHandRank(HandRank):
     def __init__(self, cards):
         super().__init__(None)
+        if cards is None:
+            cards = []
         self.cards = cards
 
     def compare_to(self, other):
-        return 0
+        if self._hand_strength is None and other.get_hand_strength() is None:
+            return 0
+
+        if self._hand_strength is None:
+            return -1
 
     def compare_same_rank(self, other):
         return 0

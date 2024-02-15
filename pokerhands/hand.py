@@ -4,6 +4,7 @@ from .handrank.ranks import RoyalFlush, StraightFlush, FullHouse, HighCard, Four
 from .rank import Rank
 from itertools import combinations
 from collections import OrderedDict
+from pokerhands.hand_lookup_tables import HandLookupTables
 
 
 class Hand:
@@ -35,8 +36,23 @@ class Hand:
         return self._rank
 
     def get_best_hand(self):
-        rank, cards = self.get_rank_for_cards(self._cards)
-        return Hand(cards)
+
+        cards = self._cards
+
+        handlookup = HandLookupTables.get_instance()
+
+        best_hand_cards = None
+        best_hand_rank = 0
+
+        all_combinations = combinations(cards, 5)
+
+        for hand in all_combinations:
+            rank = handlookup.get_hand_rank(hand)
+            if best_hand_rank == 0 or (rank > 0 and rank < best_hand_rank):
+                best_hand_rank = rank
+                best_hand_cards = list(hand)
+
+        return Hand(best_hand_cards)
         
     def get_rank_for_cards(self, cards_to_evaluate):
 

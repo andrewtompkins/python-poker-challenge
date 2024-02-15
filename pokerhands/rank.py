@@ -33,3 +33,10 @@ class Rank(Enum):
     def compare_to(self, other):
         return self.value - other.value
 
+    @classmethod
+    def from_value(cls, value):
+        for rank in cls.__members__.values():
+            if rank.value == value:
+                return rank
+        raise ValueError(f"No member of {cls.__name__} has value {value}")
+
